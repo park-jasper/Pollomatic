@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:Pollomatic.Views;assembly=Pollomatic"
+             x:Class="Pollomatic.Views.TagView">
+  <ContentView.Content>
+      <StackLayout>
+          <ListView
+              SeparatorVisibility="None"
+              ItemsSource="{Binding Path=DisplayChildren}">
+              <ListView.ItemTemplate>
+                  <DataTemplate>
+                      <ViewCell Height="400">
+                          <StackLayout Orientation="Vertical">
+                              <StackLayout Orientation="Horizontal">
+                                  <Switch IsToggled="{Binding Path=Use}" />
+                                  <ImageButton Command="{Binding Path=OpenCloseGroup}">
+                                      <ImageButton.Triggers>
+                                          <DataTrigger TargetType="ImageButton" Binding="{Binding Path=Opened}" Value="True">
+                                              <Setter Property="Source" Value="ArrowDown.png" />
+                                          </DataTrigger>
+                                          <DataTrigger TargetType="ImageButton" Binding="{Binding Path=Opened}" Value="False">
+                                              <Setter Property="Source" Value="ArrowRight.png" />
+                                          </DataTrigger>
+                                      </ImageButton.Triggers>
+                                  </ImageButton>
+                                  <Label Text="{Binding Name}" />
+                              </StackLayout>
+                              <StackLayout Orientation="Horizontal">
+                                  <BoxView WidthRequest="40" />
+                                  <views:TagView />
+                              </StackLayout>
+                          </StackLayout>
+                      </ViewCell>
+                  </DataTemplate>
+              </ListView.ItemTemplate>
+          </ListView>
+        </StackLayout>
+  </ContentView.Content>
+</ContentView>
