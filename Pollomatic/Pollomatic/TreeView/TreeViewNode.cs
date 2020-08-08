@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -6,7 +7,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Pollomatic.Domain;
 using Xamarin.Forms;
+using Xamarin.Forms.Shapes;
 
 namespace Pollomatic.TreeView
 {
@@ -17,15 +20,17 @@ namespace Pollomatic.TreeView
         public bool Expanded { get; set; } = false;
 
         private readonly ITreeItemViewModel _viewModel;
-        private ICommand ExpandCollapseCommand;
+        private readonly Action<ITreeItemViewModel> _selectViewModel;
+        private readonly int _level;
 
-        public TreeViewNode(ITreeItemViewModel vm)
+        public TreeViewNode(ITreeItemViewModel vm, int level, Action<ITreeItemViewModel> selectViewModel)
         {
             _viewModel = vm;
-            ExpandCollapseCommand = new Command(ExpandCollapse);
-            Self = new TreeViewElement(ExpandCollapseCommand)
+            _level = level;
+            _selectViewModel = selectViewModel;
+            Self = new TreeViewElement(new Command(ExpandCollapse), new Command(Select))
             {
-                Text = vm.Content
+                Text = vm.DisplayContent
             };
             ChildArea = new StackLayout();
             SetItems();
@@ -38,6 +43,25 @@ namespace Pollomatic.TreeView
         private void ExpandCollapse()
         {
             Expanded = !Expanded;
+        }
+
+        private void Select()
+        {
+            _selectViewModel?.Invoke(_viewModel);
+        }
+
+        private void BubbleUpSelect(ITreeItemViewModel vm)
+        {
+            _selectViewModel?.Invoke(vm);
+        }
+
+        public void BubbleDownUnselect()
+        {
+            Self.Unselect();
+            foreach (var node in ChildArea.Children.OfType<Grid>().Select(g => g.Children.OfType<TreeViewNode>().First()))
+            {
+                node.BubbleDownUnselect();
+            }
         }
 
         private async void NodePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -56,8 +80,8 @@ namespace Pollomatic.TreeView
         {
             switch (e.PropertyName)
             {
-                case nameof(ITreeItemViewModel.Content):
-                    Self.Text = _viewModel.Content;
+                case nameof(ITreeItemViewModel.DisplayContent):
+                    Self.Text = _viewModel.DisplayContent;
                     break;
                 case nameof(ITreeItemViewModel.Children):
                     SetItems();
@@ -67,7 +91,6 @@ namespace Pollomatic.TreeView
 
         public void SetItems()
         {
-            Subscribe();
             ClearItems();
             RenderItems();
         }
@@ -94,40 +117,26 @@ namespace Pollomatic.TreeView
 
         private void AddItem(ITreeItemViewModel vm)
         {
-            var newItem = new TreeViewNode(vm)
+            var newItem = new Grid()
             {
-                Margin = new Thickness(30, 0, 0, 0),
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition() { Width = 32 },
+                    new ColumnDefinition() { Width = GridLength.Star },
+                },
             };
+            const int progression = 25;
+            var levelColor = Color.FromHsv(progression * _level, 100, 60);
+            newItem.Children.Add(new BoxView()
+            {
+                VerticalOptions = LayoutOptions.FillAndExpand,
+                HorizontalOptions = LayoutOptions.Center,
+                WidthRequest = 1,
+                BackgroundColor = levelColor,
+                Margin = new Thickness(0, -3),
+            }, 0, 0);
+            newItem.Children.Add(new TreeViewNode(vm, _level + 1, BubbleUpSelect), 1, 0);
             ChildArea.Children.Add(newItem);
-        }
-
-        private void Subscribe()
-        {
-            if (_viewModel.Children == null)
-            {
-                return;
-            }
-            _viewModel.Children.CollectionChanged += CollectionChanged;
-        }
-
-        private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (!Expanded)
-            {
-                return;
-            }
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    foreach (var ele in e.NewItems.OfType<ITreeItemViewModel>())
-                    {
-                        AddItem(ele);
-                    }
-                    break;
-                default:
-                    throw new System.NotImplementedException();
-                    break;
-            }
         }
     }
 }

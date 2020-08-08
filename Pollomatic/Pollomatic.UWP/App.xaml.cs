@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Pollomatic.Contracts;
+using Pollomatic.UWP.Services;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,12 +10,14 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Xamarin.Forms;
+using Application = Windows.UI.Xaml.Application;
+using Frame = Windows.UI.Xaml.Controls.Frame;
 
 namespace Pollomatic.UWP
 {
@@ -42,6 +46,10 @@ namespace Pollomatic.UWP
 
 
             Frame rootFrame = Window.Current.Content as Frame;
+
+            DependencyService.Register<IFilePicker, FilePicker>();
+            DependencyService.Register<IFileAccessFactory, FileAccessFactory>();
+            DependencyService.Register<IUriStartingService, UriStartingService>();
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active

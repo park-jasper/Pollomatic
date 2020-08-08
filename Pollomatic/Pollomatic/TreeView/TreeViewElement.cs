@@ -8,9 +8,9 @@ namespace Pollomatic.TreeView
         public const uint AnimationDelay = 150;
         public bool Expanded { get; set; }
         public string Text { get; set; }
-        private Image _toggle;
-        private Label _text;
-        public TreeViewElement(ICommand expandCollapseCommand)
+        private readonly Image _toggle;
+        private readonly Label _text;
+        public TreeViewElement(ICommand expandCollapseCommand, ICommand tappedCommand)
         {
             Orientation = StackOrientation.Horizontal;
             _toggle = new Image()
@@ -24,11 +24,34 @@ namespace Pollomatic.TreeView
                     }
                 }
             };
-            _text = new Label();
+            _text = new Label()
+            {
+                GestureRecognizers =
+                {
+                    new TapGestureRecognizer()
+                    {
+                        Command = tappedCommand
+                    },
+                    new TapGestureRecognizer()
+                    {
+                        Command = new Command(ShowSelection)
+                    }
+                }
+            };
             Children.Add(_toggle);
             Children.Add(_text);
 
             PropertyChanged += TreeViewElement_PropertyChanged;
+        }
+
+        private void ShowSelection()
+        {
+            _text.BackgroundColor = Color.Gray;
+        }
+
+        public void Unselect()
+        {
+            _text.BackgroundColor = Color.Transparent;
         }
 
         private void TreeViewElement_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

@@ -1,14 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Pollomatic"
              xmlns:views="clr-namespace:Pollomatic.Views;assembly=Pollomatic"
+             xmlns:viewModels="clr-namespace:Pollomatic.Domain.ViewModels;assembly=Pollomatic.Domain"
+             xmlns:viewModels1="clr-namespace:Pollomatic.ViewModels;assembly=Pollomatic"
+             x:DataType="viewModels:MainViewModel"
              x:Class="Pollomatic.MainPage">
+    <MasterDetailPage.Master>
+        <ContentPage x:Name="xaml_Navigation" Title="Pollomatic" x:DataType="viewModels1:NavigationViewModel" WidthRequest="150">
+            <StackLayout Margin="5">
+                <Button Text="Specify" Command="{Binding Path=GoToSpecification}" />
+                <Button Text="Overview" Command="{Binding Path=GoToOverview}" />
+                <Button Text="ChooseFile" Command="{Binding Path=ChooseFile}" />
+            </StackLayout>
+        </ContentPage>
+    </MasterDetailPage.Master>
+    <MasterDetailPage.Detail>
+        <views:SpecificationPage />
+    </MasterDetailPage.Detail>
 
-    <StackLayout>
-        <!-- Place new controls here -->
-        <views:PollSpecificationView
-            BindingContext="{Binding PollViewModel}" />
-    </StackLayout>
-
-</ContentPage>
+</MasterDetailPage>

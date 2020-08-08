@@ -3,20 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Pollomatic.Contracts;
 using Pollomatic.Domain;
 using Pollomatic.Domain.ViewModels;
+using Pollomatic.ViewModels;
+using Pollomatic.Views;
 using Xamarin.Forms;
 
 namespace Pollomatic
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : MasterDetailPage
     {
-        public MainPage()
+        public MainPage(MainViewModel mvm)
         {
             InitializeComponent();
-            BindingContext = this;
+            BindingContext = mvm;
+            xaml_Navigation.BindingContext = new NavigationViewModel()
+            {
+                GoToSpecification = new Command(() => Detail = new SpecificationPage()
+                    { BindingContext = mvm }),
+                GoToOverview = new Command(() => Detail = new OverviewPage(new OverviewViewModel(mvm))),
+                ChooseFile = new Command(ChooseFile),
+            };
+            
         }
 
-        public PollSpecificationViewModel PollViewModel { get; set; }
+        private static async void ChooseFile(object sender)
+        {
+            var picker = DependencyService.Get<IFilePicker>();
+            var file = await picker.PickFile();
+            if (!string.IsNullOrEmpty(file))
+            {
+                await ((App) App.Current).Load(file);
+            }
+        }
     }
 }

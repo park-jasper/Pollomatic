@@ -5,12 +5,15 @@
              xmlns:views="clr-namespace:Pollomatic.Views;assembly=Pollomatic"
              xmlns:forms="clr-namespace:Xamarin.Forms;assembly=Pollomatic"
              xmlns:treeView="clr-namespace:Pollomatic.TreeView;assembly=Pollomatic"
+             xmlns:viewModels="clr-namespace:Pollomatic.Domain.ViewModels;assembly=Pollomatic.Domain"
+             x:DataType="viewModels:PollSpecificationViewModel"
              x:Class="Pollomatic.Views.PollSpecificationView">
 
     <ContentView.Content>
-        <StackLayout>
-            <treeView:TreeView x:Name="xaml_TreeView">
+        <Grid>
+            <treeView:TreeView Root="{Binding Path=HtmlRoot}" SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay}" HorizontalOptions="Start">
             </treeView:TreeView>
-        </StackLayout>
+            <views:DecisionView HorizontalOptions="End" IsVisible="{Binding Path=CurrentDecision, Converter={StaticResource NotNullConverter}}" />
+        </Grid>
     </ContentView.Content>
 </ContentView>

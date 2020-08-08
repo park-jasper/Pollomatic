@@ -1,8 +1,11 @@
-﻿namespace Pollomatic.Domain.Services
+﻿using System.Threading.Tasks;
+
+namespace Pollomatic.Domain.Services
 {
     public interface IStorageService
     {
-        void Store(string key, string value);
-        string Load(string key);
+        Task StoreAsync(string key, string value);
+        Task<string> LoadAsync(string key);
+        Task DeleteAsync(string key);
     }
 }

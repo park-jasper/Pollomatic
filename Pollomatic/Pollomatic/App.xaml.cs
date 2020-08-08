@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Pollomatic.Contracts;
 using Pollomatic.Domain;
+using Pollomatic.Domain.Services;
 using Pollomatic.Domain.ViewModels;
 using Pollomatic.Services;
 using Xamarin.Forms;
@@ -13,13 +16,28 @@ namespace Pollomatic
         public App()
         {
             InitializeComponent();
+            Load();
+        }
 
-            var mp = new MainPage();
+        public async Task Load(string filename = null)
+        {
+            var pollVm = new PollSpecificationViewModel();
+            IStorageService storage;
+            if (string.IsNullOrEmpty(filename))
+            {
+                storage = new StorageService();
+            }
+            else
+            {
+                var fileAccess = DependencyService.Get<IFileAccessFactory>().Get(filename);
+                var fileStorage = new FileStorageService(fileAccess);
+                await fileStorage.Initialize();
+                storage = fileStorage;
+            }
+            var pollomat = new Pollomat(storage, pollVm);
+            var mvm = new MainViewModel(pollVm, pollomat);
+            var mp = new MainPage(mvm);
             MainPage = mp;
-            var vm = new PollSpecificationViewModel();
-            mp.PollViewModel = vm;
-            var pollomat = new Pollomat(new StorageService(), vm);
-            pollomat.AddUrl("https://www.itp.kit.edu/courses");
         }
 
         protected override void OnStart()

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using Pollomatic.Domain;
 using Pollomatic.Extensions;
 using Xamarin.Forms;
 
@@ -27,6 +28,8 @@ namespace Pollomatic.TreeView
             set => this.SetValue(SelectedItemPropertyExtension, value);
         }
 
+        private TreeViewNode _rootNode;
+
         public TreeView()
         {
 
@@ -34,16 +37,19 @@ namespace Pollomatic.TreeView
 
         private void SetRoot(ITreeItemViewModel vm) 
         {
-            Content = new TreeViewNode(vm);
+            Content = _rootNode = new TreeViewNode(vm, 0, SelectionMade);
         }
 
-        public static void RootChanged(BindableObject bindable, ITreeItemViewModel oldValue,
+        private void SelectionMade(ITreeItemViewModel obj)
+        {
+            SelectedItem = obj;
+            _rootNode.BubbleDownUnselect();
+        }
+
+        public static void RootChanged(TreeView self, ITreeItemViewModel oldValue,
             ITreeItemViewModel newValue)
         {
-            if (bindable is TreeView treeView)
-            {
-                treeView.SetRoot(newValue);
-            }
+            self.SetRoot(newValue);
         }
     }
 }

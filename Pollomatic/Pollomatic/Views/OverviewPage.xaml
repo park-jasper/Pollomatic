@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Pollomatic.Domain.ViewModels;assembly=Pollomatic.Domain"
+             xmlns:controls="clr-namespace:Pollomatic.Controls;assembly=Pollomatic"
+             mc:Ignorable="d"
+             x:DataType="viewModels:OverviewViewModel"
+             x:Class="Pollomatic.Views.OverviewPage">
+    <ContentPage.Content>
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <controls:SimpleListView Grid.Row="0" ItemsSource="{Binding Path=Definitions}">
+                <controls:SimpleListView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="5" BorderColor="Black" CornerRadius="2" Padding="0">
+                            <Grid RowSpacing="0" x:DataType="viewModels:PollDefinitionViewModel" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <BoxView Grid.Row="0" BackgroundColor="LightBlue" />
+                                <Label Grid.Row="0" Text="{Binding Path=Url}" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{StaticResource GoToUrlCommand}" CommandParameter="{Binding Path=Url}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <BoxView Grid.Row="1" Grid.RowSpan="2" BackgroundColor="{Binding Path=StatusColor, Converter={StaticResource ColorConverter}}" />
+                                <Label Grid.Row="1" Text="{Binding Path=Content}" Margin="5,0" />
+                                <BoxView Grid.Row="1" HeightRequest="1" HorizontalOptions="FillAndExpand" BackgroundColor="Black" VerticalOptions="End"/>
+                                <Label Grid.Row="2" Text="{Binding Path=OtherContent}" Margin="5,0" />
+                                <StackLayout Grid.Row="3" Margin="5" Orientation="Horizontal">
+                                    <Button Text="Rescan" Command="{Binding Path=ReScanCommand}" />
+                                    <Button Text="Apply" Command="{Binding Path=ApplyNewContent}" />
+                                    <Button Text="Delete" Command="{Binding Path=RemoveCommand}" />
+                                </StackLayout>
+                                <ActivityIndicator Grid.Row="0" VerticalOptions="Center" IsRunning="{Binding Path=IsScanning}" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </controls:SimpleListView.ItemTemplate>
+            </controls:SimpleListView>
+            <Button Grid.Row="1" Text="ScanAll" Command="{Binding Path=ScanAllCommand}" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -14,6 +14,8 @@ namespace Pollomatic.Extensions
 
     public class BindablePropertyExtension
     {
+
+        public delegate void BindablePropertyChangedDelegate<TProperty, TDeclaringType>(TDeclaringType self, TProperty oldValue, TProperty newValue);
         public static BindablePropertyExtension<TProperty> Create<TProperty, TDeclaringType>(string propertyName)
         {
             return new BindablePropertyExtension<TProperty>(
@@ -22,14 +24,15 @@ namespace Pollomatic.Extensions
                     typeof(TProperty),
                     typeof(TDeclaringType)));
         }
-        public static BindablePropertyExtension<TProperty> Create<TProperty, TDeclaringType>(string propertyName, Action<BindableObject, TProperty, TProperty> propertyChanged)
+        public static BindablePropertyExtension<TProperty> Create<TProperty, TDeclaringType>(string propertyName, BindablePropertyChangedDelegate<TProperty, TDeclaringType> propertyChanged)
+            where TDeclaringType : BindableObject
         {
             return new BindablePropertyExtension<TProperty>(
                 BindableProperty.Create(
                     propertyName,
                     typeof(TProperty),
                     typeof(TDeclaringType),
-                    propertyChanged: (bindable, oldValue, newValue) => propertyChanged(bindable, (TProperty) oldValue, (TProperty) newValue)));
+                    propertyChanged: (bindable, oldValue, newValue) => propertyChanged((TDeclaringType) bindable, (TProperty) oldValue, (TProperty) newValue)));
         }
     }
 }

@@ -1,18 +1,27 @@
-﻿using Pollomatic.Domain.Services;
+﻿using System.Threading.Tasks;
+using Pollomatic.Domain.Services;
 using Xamarin.Essentials;
 
 namespace Pollomatic.Services
 {
     public class StorageService : IStorageService
     {
-        public void Store(string key, string value)
+        public Task StoreAsync(string key, string value)
         {
             Preferences.Set(key, value);
+            return Task.CompletedTask;
         }
 
-        public string Load(string key)
+        public Task<string> LoadAsync(string key)
         {
-            return Preferences.Get(key, "");
+            var content = Preferences.Get(key, "");
+            return Task.FromResult(content);
+        }
+
+        public Task DeleteAsync(string key)
+        {
+            Preferences.Remove(key);
+            return Task.CompletedTask;
         }
     }
 }

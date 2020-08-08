@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Pollomatic.Domain.ViewModels;
-using Xamarin.Forms;
+﻿using System.Collections.ObjectModel;
 
-namespace Pollomatic.ViewModels
+namespace Pollomatic.Domain.ViewModels
 {
     public class TreeItemViewModel : BaseViewModel, ITreeItemViewModel
     {
+        public string DisplayContent { get; set; }
         public string Content { get; set; }
         public ObservableCollection<ITreeItemViewModel> Children { get; set; }
     }
