@@ -13,7 +13,7 @@
         <Grid>
             <treeView:TreeView Root="{Binding Path=HtmlRoot}" SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay}" HorizontalOptions="Start">
             </treeView:TreeView>
-            <views:DecisionView HorizontalOptions="End" IsVisible="{Binding Path=CurrentDecision, Converter={StaticResource NotNullConverter}}" />
+            <views:DecisionView HorizontalOptions="Start" IsVisible="{Binding Path=CurrentDecision, Converter={StaticResource NotNullConverter}}" />
         </Grid>
     </ContentView.Content>
 </ContentView>

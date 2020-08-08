@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Windows.Input;
 using Pollomatic.Contracts;
+using Pollomatic.Domain.Commands;
 using Pollomatic.Domain.Models;
 using Xamarin.Forms;
 
 namespace Pollomatic.Commands
 {
-    public class GoToUrlCommand : ICommand
+    public class GoToUrlCommand : CommandForwarding
     {
-        public bool CanExecute(object parameter)
+        public GoToUrlCommand() : base(GoToUrl)
         {
-            return true;
+
         }
 
-        public async void Execute(object parameter)
+        private static async void GoToUrl(object parameter)
         {
             if (parameter is string url)
             {
@@ -24,7 +25,5 @@ namespace Pollomatic.Commands
                 }
             }
         }
-
-        public event EventHandler CanExecuteChanged;
     }
 }

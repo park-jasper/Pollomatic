@@ -16,7 +16,9 @@ namespace Pollomatic
         public App()
         {
             InitializeComponent();
+#pragma warning disable 4014
             Load();
+#pragma warning restore 4014
         }
 
         public async Task Load(string filename = null)

@@ -74,7 +74,7 @@ namespace Pollomatic.Domain.ViewModels
             switch (e.PropertyName)
             {
                 case nameof(CurrentDecision):
-                    CurrentDecisionText = GetContent(CurrentDecision.Node);
+                    CurrentDecisionText = GetContent(CurrentDecision.Node.ParentNode);
                     break;
             }
         }
@@ -99,7 +99,7 @@ namespace Pollomatic.Domain.ViewModels
             return res;
         }
 
-        private static string GetContent(HtmlNode node)
+        public static string GetContent(HtmlNode node)
         {
             string content = "";
             if (node.NodeType == HtmlNodeType.Text)

@@ -25,12 +25,12 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <BoxView Grid.Row="0" BackgroundColor="LightBlue" />
-                                <Label Grid.Row="0" Text="{Binding Path=Url}" HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Label.GestureRecognizers>
+                                <BoxView Grid.Row="0" BackgroundColor="LightBlue">
+                                    <BoxView.GestureRecognizers>
                                         <TapGestureRecognizer Command="{StaticResource GoToUrlCommand}" CommandParameter="{Binding Path=Url}" />
-                                    </Label.GestureRecognizers>
-                                </Label>
+                                    </BoxView.GestureRecognizers>
+                                </BoxView>
+                                <Label Grid.Row="0" Text="{Binding Path=Url}" HorizontalOptions="Center" VerticalOptions="Center" />
                                 <BoxView Grid.Row="1" Grid.RowSpan="2" BackgroundColor="{Binding Path=StatusColor, Converter={StaticResource ColorConverter}}" />
                                 <Label Grid.Row="1" Text="{Binding Path=Content}" Margin="5,0" />
                                 <BoxView Grid.Row="1" HeightRequest="1" HorizontalOptions="FillAndExpand" BackgroundColor="Black" VerticalOptions="End"/>

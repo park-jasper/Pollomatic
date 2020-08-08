@@ -21,7 +21,9 @@ namespace Pollomatic.Domain.ViewModels
             _pollomat = mvm.Pollomat;
             ScanAllCommand = new CommandForwarding(ScanAll);
             Definitions = new ObservableCollection<PollDefinitionViewModel>();
+#pragma warning disable 4014
             GetAvailableUrls();
+#pragma warning restore 4014
         }
 
         private async void ScanAll(object obj)

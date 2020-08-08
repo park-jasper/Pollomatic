@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:Pollomatic.Converters;assembly=Pollomatic"
              xmlns:commands="clr-namespace:Pollomatic.Commands;assembly=Pollomatic"
+             xmlns:markupExtensions="clr-namespace:Pollomatic.MarkupExtensions;assembly=Pollomatic"
              x:Class="Pollomatic.App">
     <Application.Resources>
         <converters:NotNullConverter x:Key="NotNullConverter" />

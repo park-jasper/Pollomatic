@@ -6,6 +6,11 @@
              xmlns:viewModels="clr-namespace:Pollomatic.Domain.ViewModels;assembly=Pollomatic.Domain"
              xmlns:converters="clr-namespace:Pollomatic.Converters;assembly=Pollomatic"
              xmlns:models="clr-namespace:Pollomatic.Domain.Models;assembly=Pollomatic.Domain"
+             xmlns:htmlAgilityPack="clr-namespace:HtmlAgilityPack;assembly=HtmlAgilityPack"
+             xmlns:collections="clr-namespace:System.Collections;assembly=netstandard"
+             xmlns:e="clr-namespace:Pollomatic.MarkupExtensions;assembly=Pollomatic"
+             xmlns:system="clr-namespace:System;assembly=netstandard"
+             xmlns:controls="clr-namespace:Pollomatic.Controls;assembly=Pollomatic"
              mc:Ignorable="d"
              x:DataType="viewModels:PollSpecificationViewModel"
              x:Class="Pollomatic.Views.DecisionView">
@@ -13,6 +18,8 @@
         <converters:FeatureRelationConverter x:Key="RelationConverter" />
         <converters:FeaturePositionConverter x:Key="PosConverter" />
         <converters:FeatureContentConverter x:Key="ContentConverter" />
+        <converters:MethodInvocationConverter x:TypeArguments="htmlAgilityPack:HtmlNode, system:String" InvocationFunc="{e:StaticMethod GetContent, Type={x:Type viewModels:PollSpecificationViewModel}}" x:Key="NodeToTextConverter" />
+        <converters:FilterInvocationConverter x:TypeArguments="htmlAgilityPack:HtmlNode" Predicate="{e:StaticMethod IsRelevant, Type={x:Type models:HtmlNavigation}}" x:Key="IsRelevantConverter" />
     </ContentView.Resources>
     <ContentView.Content>
         <Grid>
@@ -20,9 +27,14 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <BoxView Grid.Row="0" Grid.RowSpan="3" BackgroundColor="White" Opacity="1" />
-            <Label Grid.Row="0" Text="{Binding Path=CurrentDecisionText}" />
-            <Grid Grid.Row="1" BindingContext="{Binding Path=CurrentDecision}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="4*" />
+            </Grid.ColumnDefinitions>
+            <BoxView Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="White" Opacity="1" />
+
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Path=CurrentDecisionText}" />
+            <Grid Grid.Row="1" Grid.Column="0" BindingContext="{Binding Path=CurrentDecision}">
                 <ListView x:DataType="models:HtmlNavigation" ItemsSource="{Binding Path=Features}" SelectedItem="{Binding Path=SelectedFeature, Mode=TwoWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -36,6 +48,18 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="1" BindingContext="{Binding Path=CurrentDecision.Parent}">
+                <controls:SimpleListView x:DataType="models:HtmlNavigation" ItemsSource="{Binding Path=ChildNodes}" >
+                    <controls:SimpleListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid x:DataType="models:ChildNodeViewModel">
+                                <BoxView BackgroundColor="LightBlue" IsVisible="{Binding Path=IsChosenChild}" VerticalOptions="Start"/>
+                                <Label Text="{Binding Path=Content}" VerticalOptions="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </controls:SimpleListView.ItemTemplate>
+                </controls:SimpleListView>
             </Grid>
         </Grid>
   </ContentView.Content>

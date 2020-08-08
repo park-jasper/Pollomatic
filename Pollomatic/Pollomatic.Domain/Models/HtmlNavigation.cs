@@ -20,6 +20,7 @@ namespace Pollomatic.Domain.Models
         public HtmlNavigation Child { get; private set; }
         public HtmlNavigation Parent { get; private set; }
         public IEnumerable<ChildFeature> Features { get; set; }
+        public IEnumerable<ChildNodeViewModel> ChildNodes { get; set; }
         public ChildFeature SelectedFeature { get; set; }
 
         private readonly ICommand _selectFeature;
@@ -27,7 +28,7 @@ namespace Pollomatic.Domain.Models
         private HtmlNavigation(HtmlNode node, IEnumerable<ChildFeature> features)
         {
             Node = node;
-            Features = features;
+            Features = features.ToList();
             _selectFeature = new CommandForwarding(sender =>
             {
                 if (sender is ChildFeature feature)
@@ -35,23 +36,32 @@ namespace Pollomatic.Domain.Models
                     SelectedFeature = feature;
                 }
             });
-            features.ForEach(f => f.Select = _selectFeature);
+            Features.ForEach(f => f.Select = _selectFeature);
+            ChildNodes = Node.ChildNodes.Where(IsRelevant).Select(n => new ChildNodeViewModel()
+            {
+                Content = PollSpecificationViewModel.GetContent(n),
+                IsChosenChild = n == Child?.Node
+            });
         }
 
         public static HtmlNavigation Create(HtmlNode leaf)
         {
             HtmlNavigation current = new HtmlNavigation(leaf, Enumerable.Empty<ChildFeature>());
             var currentNode = leaf;
-            while (!IsRoot(currentNode))
+            while (true)
             {
                 var features = GetFeatures(currentNode, currentNode.ParentNode).ToList();
                 var next = new HtmlNavigation(currentNode, features);
                 next.Child = current;
                 current.Parent = next;
                 current = next;
+                if (IsRoot(currentNode))
+                {
+                    break;
+                }
                 currentNode = currentNode.ParentNode;
             }
-            return current;
+            return current.Child;
         }
 
         public bool IsLeaf => Child == null || !Child.Features.Any();
@@ -119,10 +129,6 @@ namespace Pollomatic.Domain.Models
                         ChildFeature.FeatureType.Class,
                         string.Join(" ", subset));
                 }
-                //yield return Extract(node => node.Attributes.Where(att =>
-                //        att.Name == classAttribute.Name && att.Value == classAttribute.Value),
-                //    (left, right) => left.Any() && right.Any(),
-                //    ChildFeature.FeatureType.Class, classAttribute.Value);
             }
             yield return new ChildFeature()
             {
@@ -223,6 +229,12 @@ namespace Pollomatic.Domain.Models
                     return false;
             }
         }
+    }
+
+    public class ChildNodeViewModel
+    {
+        public string Content { get; set; }
+        public bool IsChosenChild { get; set; }
     }
 
     public class ChildFeature
